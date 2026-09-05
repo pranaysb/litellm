@@ -105,6 +105,11 @@ def test_fireworks_ai_provider_config_registration() -> None:
     assert config.custom_llm_provider == LlmProviders.FIREWORKS_AI
 
 
+def test_fireworks_ai_does_not_advertise_native_file_search() -> None:
+    """Fireworks has no vector-store file_search, so the emulated chat-bridge path must handle it."""
+    assert FireworksAIResponsesAPIConfig().supports_native_file_search() is False
+
+
 def test_responses_call_hits_native_endpoint_with_mcp_tool_untouched() -> None:
     client: Final = _mock_http_client(_fireworks_response("accounts/fireworks/models/kimi-k3"))
     mcp_tool: Final[Mcp] = {
