@@ -7397,6 +7397,18 @@ async def test_enforced_model_allowlists_reads_every_level_from_cache():
         user_api_key_cache=cache,
         proxy_logging_obj=proxy_logging_obj,
     )
+    without_database_team_only = await enforced_model_allowlists(
+        valid_token=UserAPIKeyAuth(
+            token="hashed-fake",
+            models=[],
+            team_models=["gpt-4o"],
+            user_id="user-fake",
+            team_id="team-fake",
+        ),
+        prisma_client=None,
+        user_api_key_cache=cache,
+        proxy_logging_obj=proxy_logging_obj,
+    )
 
     assert [list(scope) for scope in team_scoped] == [
         ["gpt-4o", "gpt-4o-mini"],
@@ -7406,4 +7418,5 @@ async def test_enforced_model_allowlists_reads_every_level_from_cache():
         ["gpt-4.1"],
     ]
     assert [list(scope) for scope in personal] == [[], [], [], ["o3"], []]
-    assert [list(scope) for scope in without_database] == [["gpt-4o"]]
+    assert [list(scope) for scope in without_database] == [["gpt-4o"], []]
+    assert [list(scope) for scope in without_database_team_only] == [[], ["gpt-4o"]]
